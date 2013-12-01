@@ -39,13 +39,16 @@ window.onload = function(){
 
 	Downloader.getResult = function(){
 		Downloader.hideResult();
-		setTimeout(Downloader.showLoader, lte_IE9 ? 0 : 250);
 
-		setTimeout(function(){
-			Ajax.post('stream_cz.php', {url: $url_input.value}, function(data){
-				Downloader.displayResult(Ajax.parseJSON(data));
-			});
-		}, lte_IE9 ? 0 : 650);
+		if($url_input.value != ''){
+			setTimeout(Downloader.showLoader, lte_IE9 ? 0 : 250);
+
+			setTimeout(function(){
+				Ajax.post('stream_cz.php', {url: $url_input.value}, function(data){
+					Downloader.displayResult(Ajax.parseJSON(data));
+				});
+			}, lte_IE9 ? 0 : 650);
+		}
 	};
 	Downloader.displayResult = function(data){
 		Downloader.hideLoader();
