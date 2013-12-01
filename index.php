@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="downloader.css">
 	<!--[if lte IE 8]>
 	<script>
-		var i = 0, e = ["article", "aside", "details", "figcaption", "figure", "footer", "header", "hgroup", "menu", "nav", "section"];
+		var i = 0, e = ["footer", "header", "section"];
 		while(e[i]) document.createElement(e[i++]);
 
 		var lte_IE8 = true;
