@@ -3,7 +3,7 @@
  *
  * @author    Zemistr <me@zemistr.eu>, http://www.zemistr.eu
  * @link      http://www.zemistr.eu/projects/ajax
- * @version   1.1.0
+ * @version   1.1.1
  * @copyright Zemistr 2013
  * @licence   CC-BY-SA, http://creativecommons.org/licenses/by-sa/3.0/deed.cs
  */
@@ -103,7 +103,7 @@ var Ajax = (function(w, d){
 			data = '';
 		}
 
-		xhr = w.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
+		xhr = new XMLHttpRequest();
 		xhr.aborted = false;
 		xhr.open(method, url, true);
 		xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
