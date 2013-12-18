@@ -3,10 +3,13 @@ header("Content-Type: application/json; charset=UTF-8");
 
 $url =& $_POST['url'];
 
+if($url === null) {
+	$url =& $_GET['test_url'];
+}
+
 $result = array(
 	'title'     => null,
-	'qualities' => array(),
-	'source'    => 'live'
+	'qualities' => array()
 );
 
 function proxy($url) {
@@ -97,6 +100,8 @@ if(!empty($url)) {
 				}
 
 				file_put_contents('cache/' . $sha1_url . '.php', '<?php return ' . var_export($result, true) . ';');
+
+				$result['source'] = 'live';
 			}
 			/******************** QUALITIES ********************/
 		}
