@@ -2,9 +2,11 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 $url =& $_POST['url'];
+$cache = true;
 
 if($url === null) {
 	$url =& $_GET['test_url'];
+	$cache = false;
 }
 
 $result = array(
@@ -40,7 +42,7 @@ if(!empty($url)) {
 	$sha1_url = sha1($url);
 	$cache_file = 'cache/' . $sha1_url . '.php';
 
-	if(is_file($cache_file) && filemtime($cache_file) > strtotime('-7 day')) {
+	if($cache && is_file($cache_file) && filemtime($cache_file) > strtotime('-7 day')) {
 		$result = require $cache_file;
 		$result['source'] = 'cache';
 	}
