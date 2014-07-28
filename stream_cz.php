@@ -1,10 +1,17 @@
 <?php
+/**
+ * Stream.cz downloader
+ *
+ * @version 2.0.1
+ * @author  Martin Zeman (Zemistr)
+ */
+
 header("Content-Type: application/json; charset=UTF-8");
 
 $url =& $_POST['url'];
 $cache = true;
 
-if($url === null) {
+if ($url === null) {
 	$url =& $_GET['test_url'];
 	$cache = false;
 }
@@ -35,18 +42,19 @@ function proxy($url) {
 		*/
 	);
 
-	return $services[array_rand($services)]($url);
+	$service = $services[array_rand($services)];
+
+	return $service($url);
 }
 
-if(!empty($url)) {
+if (!empty($url)) {
 	$sha1_url = sha1($url);
 	$cache_file = 'cache/' . $sha1_url . '.php';
 
-	if($cache && is_file($cache_file) && filemtime($cache_file) > strtotime('-7 day')) {
+	if ($cache && is_file($cache_file) && filemtime($cache_file) > strtotime('-7 day')) {
 		$result = require $cache_file;
 		$result['source'] = 'cache';
-	}
-	else {
+	} else {
 		$opts = array(
 			'http' => array(
 				'method' => 'GET',
@@ -64,23 +72,23 @@ if(!empty($url)) {
 		$context = stream_context_create($opts);
 		$page = file_get_contents($url, 0, $context);
 
-		if(!$page) {
+		if (!$page) {
 			$url = proxy($url);
 			$context = stream_context_create($opts);
 			$page = file_get_contents($url, 0, $context);
 		}
 
-		if(preg_match('~Stream\.Data\.Episode\((?<data>[^\)]+)\)~isU', $page, $data)) {
+		if (preg_match('~Stream\.Data\.Episode\((?<data>.+)\);~isU', $page, $data)) {
 			$data = @json_decode($data['data'], true);
 
 			/********************** TITLE **********************/
 			$title_parts = array();
 
-			if(!empty($data['show_name'])) {
+			if (!empty($data['show_name'])) {
 				$title_parts[] = $data['show_name'];
 			}
 
-			if(!empty($data['episode_name'])) {
+			if (!empty($data['episode_name'])) {
 				$title_parts[] = $data['episode_name'];
 			}
 
@@ -88,11 +96,11 @@ if(!empty($url)) {
 			/********************** TITLE **********************/
 
 			/******************** QUALITIES ********************/
-			if(!empty($data['instances'])) {
-				foreach($data['instances'] as $instance) {
+			if (!empty($data['instances'])) {
+				foreach ($data['instances'] as $instance) {
 					$instance =& $instance['instances'][0];
 
-					if(!empty($instance['quality_label'])) {
+					if (!empty($instance['quality_label'])) {
 						$result['qualities'][$instance['quality']] = array(
 							'source'        => $instance['source'],
 							'quality'       => $instance['quality'],
@@ -103,7 +111,9 @@ if(!empty($url)) {
 
 				file_put_contents('cache/' . $sha1_url . '.php', '<?php return ' . var_export($result, true) . ';');
 
-				$result['source'] = 'live';
+				if ($cache) {
+					$result['source'] = 'live';
+				}
 			}
 			/******************** QUALITIES ********************/
 		}
