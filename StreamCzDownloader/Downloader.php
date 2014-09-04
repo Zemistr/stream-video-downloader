@@ -5,18 +5,28 @@ use StreamCzDownloader\Drivers\IDriver;
 use StreamCzDownloader\Drivers\NewDriver;
 use StreamCzDownloader\Drivers\OldDriver;
 use StreamCzDownloader\Loaders\ILoader;
+use StreamCzDownloader\Loggers\ILogger;
 
 /**
  * Class Downloader
  *
- * @version 3.0.0
+ * @version 3.1.0
  */
 class Downloader {
 	private $detect_driver = false;
+
 	/** @var IDriver */
 	private $driver;
+
 	/** @var ILoader */
 	private $loader;
+
+	/** @var ILogger */
+	private $logger;
+
+	public function __construct() {
+		spl_autoload_register(array($this, 'autoload'));
+	}
 
 	protected function setHeaders($result = true) {
 		header("Content-Type: application/json; charset=UTF-8");
@@ -24,10 +34,6 @@ class Downloader {
 		if (!$result) {
 			header("HTTP/1.0 404 Not Found");
 		}
-	}
-
-	public function __construct() {
-		spl_autoload_register(array($this, 'autoload'));
 	}
 
 	public function autoload($class_name) {
@@ -50,19 +56,23 @@ class Downloader {
 
 	public function load($url) {
 		if (!$this->loader) {
+			$this->logger->log('You must set Loader!');
 			throw new \RuntimeException('You must set Loader!');
 		}
 
 		if (!$this->driver && $this->detect_driver) {
 			if (strpos($url, 'old.stream.cz') !== false) {
-				$this->driver = new OldDriver($this->loader);
+				$this->logger->log('Autodetect driver: OldDriver');
+				$this->driver = new OldDriver($this->loader, $this->logger);
 			}
 			else {
-				$this->driver = new NewDriver($this->loader);
+				$this->logger->log('Autodetect driver: NewDriver');
+				$this->driver = new NewDriver($this->loader, $this->logger);
 			}
 		}
 
 		if (!$this->driver) {
+			$this->logger->log('You must set Driver!');
 			throw new \RuntimeException('You must set Driver!');
 		}
 
@@ -89,6 +99,10 @@ class Downloader {
 
 	public function setDriver(IDriver $driver) {
 		$this->driver = $driver;
+	}
+
+	public function setLogger(ILogger $logger) {
+		$this->logger = $logger;
 	}
 
 	public function setLoader(ILoader $loader) {

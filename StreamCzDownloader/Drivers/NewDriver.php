@@ -2,16 +2,22 @@
 namespace StreamCzDownloader\Drivers;
 
 use StreamCzDownloader\Loaders\ILoader;
+use StreamCzDownloader\Loggers\ILogger;
 
 class NewDriver implements IDriver {
 	/** @var ILoader */
 	private $loader;
 
-	public function __construct(ILoader $loader) {
+	/** @var ILogger */
+	private $logger;
+
+	public function __construct(ILoader $loader, ILogger $logger) {
 		$this->loader = $loader;
+		$this->logger = $logger;
 	}
 
 	public function getData($url) {
+		$this->logger->log(__METHOD__ . ': ' . $url);
 		$page = $this->loader->load($url);
 
 		$result = array(

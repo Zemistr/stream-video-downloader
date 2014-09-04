@@ -1,12 +1,29 @@
 <?php
-$url = 'http://stream.zemistr.eu/stream_cz.php?test_url=' . urlencode('http://www.stream.cz/nejnovejsi/peklonataliri/10000721-ryze');
-$live = file_get_contents($url);
+require('StreamCzDownloader/Downloader.php');
+
+$url = 'http://www.stream.cz/nejnovejsi/peklonataliri/10000721-ryze';
+
+$downloader = new \StreamCzDownloader\Downloader();
+$downloader->detectDriver();
+
+$logger = new StreamCzDownloader\Loggers\MemoryLogger();
+$loader = new StreamCzDownloader\Loaders\ProxyLoader($logger);
+
+$downloader->setLogger($logger);
+$downloader->setLoader($loader);
 
 if(isset($_GET['update'])) {
-	file_put_contents('status_checker_test_data.json', $live);
+	file_put_contents('status_checker_test_data.json', json_encode($downloader->load($url)));
+	exit('ok');
 }
 
-$temp = file_get_contents('status_checker_test_data.json');
+try {
+	$live = json_encode($downloader->load($url));
+}catch (RuntimeException $exception){
+	$live = null;
+}
+
+$temp = @file_get_contents('status_checker_test_data.json');
 
 $message = array(
 	'status'   => 1,
@@ -17,6 +34,10 @@ if($live != $temp) {
 	$message['status'] = 0;
 	$message['messages'][] = 'Data are not identical.';
 	$message['messages'][] = $url . '  X  http://stream.zemistr.eu/status_checker_test_data.json';
+	$message['messages'][] = '------';
+	$message['messages'][] = 'LOG:';
+
+	$message['messages'] = array_merge($message['messages'], $logger->getLog());
 }
 
 //ob_clean();

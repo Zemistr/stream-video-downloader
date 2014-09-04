@@ -2,20 +2,26 @@
 namespace StreamCzDownloader\Drivers;
 
 use StreamCzDownloader\Loaders\ILoader;
+use StreamCzDownloader\Loggers\ILogger;
 
 class OldDriver implements IDriver {
 	/** @var ILoader */
 	private $loader;
 
+	/** @var ILogger */
+	private $logger;
+
+	public function __construct(ILoader $loader, ILogger $logger) {
+		$this->loader = $loader;
+		$this->logger = $logger;
+	}
+
 	private function getUrl($id) {
 		return 'http://cdn-dispatcher.stream.cz/?id=' . $id;
 	}
 
-	public function __construct(ILoader $loader) {
-		$this->loader = $loader;
-	}
-
 	public function getData($url) {
+		$this->logger->log(__METHOD__ . ': ' . $url);
 		$page = $this->loader->load($url);
 
 		$result = array(
