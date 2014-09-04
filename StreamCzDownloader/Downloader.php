@@ -8,6 +8,7 @@ use StreamCzDownloader\Loaders\ILoader;
 
 /**
  * Class Downloader
+ *
  * @version 3.0.0
  */
 class Downloader {
@@ -55,7 +56,8 @@ class Downloader {
 		if (!$this->driver && $this->detect_driver) {
 			if (strpos($url, 'old.stream.cz') !== false) {
 				$this->driver = new OldDriver($this->loader);
-			} else {
+			}
+			else {
 				$this->driver = new NewDriver($this->loader);
 			}
 		}
@@ -78,6 +80,8 @@ class Downloader {
 
 		if ($found) {
 			echo json_encode($data);
+
+			return $data;
 		}
 
 		exit();
