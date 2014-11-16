@@ -21,12 +21,6 @@ class ProxyLoader implements ILoader {
 				return $url;
 			},
 			function ($url) {
-				$url = 'http://www.proxyoption.info/index.php?q=' . urlencode($url) . '&hl=c0';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
-
-				return $url;
-			},
-			function ($url) {
 				$url = 'http://www.anonyxy.info/index.php?q=' . urlencode($url) . '&hl=c0';
 				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
 
@@ -56,6 +50,69 @@ class ProxyLoader implements ILoader {
 
 				return $url;
 			},
+			function ($url) {
+				$url = 'https://proxy-nl.hide.me/go.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'https://proxy-us.hide.me/go.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'https://proxy-de.hide.me/go.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'https://www.filterbypass.me/anonsurf.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'http://onlineproxyfree.com/index.php?p=' . urlencode($url) . '&hl=c0';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = parse_url($url);
+				$url['host'] .= '.prx.websiteproxy.co.uk';
+
+				$url = $this->unparseUrl($url);
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'http://www.zendproxy.com/bb.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'https://se.proxy.sumrando.com/wproxy/browse.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'http://boomproxy.com/browse.php?u=' . urlencode($url) . '&b=0&f=norefer';
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
+			function ($url) {
+				$url = 'http://www.webproxy.net/view?q=' . urlencode($url);
+				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+
+				return $url;
+			},
 			/*
 			function ($url) {
 				return $url;
@@ -66,6 +123,20 @@ class ProxyLoader implements ILoader {
 		$service = $services[array_rand($services)];
 
 		return $service($url);
+	}
+
+	protected function unparseUrl(array $parsed_url) {
+		$scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+		$host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+		$port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+		$user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+		$pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+		$pass = ($user || $pass) ? "$pass@" : '';
+		$path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+		$query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+		$fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
+		return "$scheme$user$pass$host$port$path$query$fragment";
 	}
 
 	public function load($url) {
