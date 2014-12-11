@@ -21,19 +21,7 @@ class ProxyLoader implements ILoader {
 				return $url;
 			},
 			function ($url) {
-				$url = 'http://www.melpy.info/index.php?q=' . urlencode($url) . '&hl=c0';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
-
-				return $url;
-			},
-			function ($url) {
 				$url = 'http://anonymouse.cz/anonymizer/index.php?q=' . urlencode($url) . '&hl=c0';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
-
-				return $url;
-			},
-			function ($url) {
-				$url = 'http://www.ipv6proxy.net/go.php?u=' . urlencode($url) . '&b=0&f=norefer';
 				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
 
 				return $url;
