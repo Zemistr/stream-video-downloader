@@ -1,7 +1,7 @@
 <?php
 require('StreamCzDownloader/Downloader.php');
 
-$url = 'http://www.stream.cz/nejnovejsi/peklonataliri/10000721-ryze';
+$url = 'http://www.stream.cz/peklonataliri/10000721-ryze';
 
 $downloader = new \StreamCzDownloader\Downloader();
 $downloader->detectDriver();
