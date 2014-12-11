@@ -27,8 +27,8 @@
 		var lte_IE8 = !!lte_IE8;
 		var lte_IE9 = !!lte_IE9;
 	</script>
-	<script src="ajax.class.min.js"></script>
-	<script src="downloader.min.js"></script>
+	<script src="ajax.class.min.js?v2"></script>
+	<script src="downloader.min.js?v2"></script>
 
 	<!-- Piwik -->
 	<script type="text/javascript">
@@ -67,7 +67,7 @@
 	<footer id="main-footer" class="main">
 		Idea &amp; parser by <a href="http://zemistr.eu" target="_blank" class="footer-link">Zemistr</a>,
 		HTML/CSS &amp; effects by <a href="http://marekzeman.cz" target="_blank" class="footer-link">Marek Zeman</a>
-		<i class="version">Version 3.1.0 / 2014</i>
+		<i class="version">Version 3.2.0 / 2014</i>
 	</footer>
 </div>
 </body>
