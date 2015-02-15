@@ -20,7 +20,7 @@ $downloader = new \StreamCzDownloader\Downloader();
 $downloader->detectDriver();
 
 $logger = new StreamCzDownloader\Loggers\MemoryLogger();
-$loader = new StreamCzDownloader\Loaders\ProxyLoader($logger);
+$loader = new StreamCzDownloader\Loaders\DirectLoader($logger);
 
 $downloader->setLogger($logger);
 $downloader->setLoader($loader);

@@ -24,11 +24,13 @@ class NewDriver implements IDriver {
 			'qualities' => array()
 		);
 
+		$original_url = $url;
+
 		if (preg_match('~/(?<id>[0-9]{5,})\-~', $url, $matches)) {
 			$url = "http://www.stream.cz/API/episode/$matches[id]";
 		}
 
-		$json = $this->loader->load($url);
+		$json = $this->loader->load($url, $original_url);
 
 		if ($json) {
 			$data = @json_decode($json, true);

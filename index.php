@@ -67,7 +67,7 @@
 	<footer id="main-footer" class="main">
 		Idea &amp; parser by <a href="http://zemistr.eu" target="_blank" class="footer-link">Zemistr</a>,
 		HTML/CSS &amp; effects by <a href="http://marekzeman.cz" target="_blank" class="footer-link">Marek Zeman</a>
-		<i class="version">Version 3.2.0 / 2014</i>
+		<i class="version">Version 3.2.1 / <?= date('Y') ?></i>
 	</footer>
 </div>
 </body>

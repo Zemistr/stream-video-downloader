@@ -22,7 +22,7 @@ class OldDriver implements IDriver {
 
 	public function getData($url) {
 		$this->logger->log(__METHOD__ . ': ' . $url);
-		$page = $this->loader->load($url);
+		$page = $this->loader->load($url, $url);
 
 		$result = array(
 			'title'     => null,

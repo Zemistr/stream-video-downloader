@@ -6,72 +6,76 @@ use StreamCzDownloader\Loggers\ILogger;
 class ProxyLoader implements ILoader {
 	/** @var ILogger */
 	private $logger;
-	private $loops = 5;
+	private $temp_file;
+	private $loops = 10;
+
+	/** @var \InfiniteIterator */
+	private $proxies;
 
 	public function __construct(ILogger $logger) {
 		$this->logger = $logger;
 	}
 
-	protected function getProxy($url) {
-		$services = array(
-			function ($url) {
-				$url = 'http://go-connects.appspot.com/' . preg_replace('~https?://~', '', $url);
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+	public function setTempDir($temp_dir) {
+		$this->temp_file = "$temp_dir/proxies.php";
+	}
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'http://anonymouse.cz/anonymizer/index.php?q=' . urlencode($url) . '&hl=c0';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+	protected function loadProxies() {
+		if (!is_file($this->temp_file)) {
+			$headers = array(
+				'User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0',
+				"Host: free-proxy.cz",
+			);
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'http://anonymouse.org/cgi-bin/anon-www.cgi/' . urlencode($url);
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+			$opts = array(
+				'http' => array(
+					'header' => implode(PHP_EOL, $headers)
+				)
+			);
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'http://onlineproxyfree.com/index.php?p=' . urlencode($url) . '&hl=c0';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+			$context = stream_context_create($opts);
+			$page = file_get_contents('http://free-proxy.cz/cs/proxylist/country/all/https/ping/level3/1', 0, $context);
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'https://se.proxy.sumrando.com/wproxy/browse.php?u=' . urlencode($url) . '&b=4&f=norefer';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+			$doc = new \DOMDocument();
+			$doc->validateOnParse = true;
+			@$doc->loadHTML($page);
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'https://br.proxy.sumrando.com/wproxy/browse.php?u=' . urlencode($url) . '&b=4&f=norefer';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+			$xpath = new \DOMXPath($doc);
+			$xpath_result = $xpath->query("//*[@id='proxy_list']/*/tr[*]/td[1]|//*[@id='proxy_list']/*/tr[*]/td[2]");
+			$xpath_array = array_map(
+				function (\DOMNode $node) {
+					return trim($node->nodeValue);
+				},
+				iterator_to_array($xpath_result)
+			);
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'https://sg.proxy.sumrando.com/wproxy/browse.php?u=' . urlencode($url) . '&b=4&f=norefer';
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
+			$iterator = new \ArrayIterator($xpath_array);
+			$pairs = array();
 
-				return $url;
-			},
-			function ($url) {
-				$url = 'http://www.webproxy.net/view?q=' . urlencode($url);
-				$this->logger->log(__CLASS__ . '::getProxy() : ' . $url);
-
-				return $url;
-			},
-			/*
-			function ($url) {
-				return $url;
+			foreach ($iterator as $item) {
+				if (is_numeric(str_replace('.', '', $item))) {
+					$iterator->next();
+					$pair = implode(':', array($item, $iterator->current()));
+					$pairs[$pair] = $pair;
+				}
 			}
-			*/
-		);
 
-		$service = $services[array_rand($services)];
+			file_put_contents($this->temp_file, "<?php\nreturn " . var_export(array_values($pairs), true) . ";");
+		}
 
-		return $service($url);
+		return require($this->temp_file);
+	}
+
+	protected function getProxy() {
+		if (!$this->proxies) {
+			$iterator = new \ArrayIterator($this->loadProxies());
+			$this->proxies = new \InfiniteIterator($iterator);
+		}
+
+		$this->proxies->rewind();
+		$current = $this->proxies->current();
+
+		return $current;
 	}
 
 	protected function unparseUrl(array $parsed_url) {
@@ -88,27 +92,47 @@ class ProxyLoader implements ILoader {
 		return "$scheme$user$pass$host$port$path$query$fragment";
 	}
 
-	public function load($url) {
+	public function load($url, $original_url) {
 		$this->logger->log(__METHOD__ . ': ' . $url);
+
+		$headers = array(
+			'User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0',
+			'Accept: application/json, text/plain, */*',
+			"Accept-Language: cs,en;q=0.5",
+			"DNT: 1",
+			"Host: www.stream.cz",
+			"x-insight: activate",
+			"Referer: $original_url"
+		);
+
+		if (strpos($url, 'API')) {
+			$data = array("95de526253c14", "fb5f58a", "820353bd70", "fd");
+			$time = microtime(true);
+
+			$api_key = implode('', array($data[1], $data[2], $data[0], $data[3]));
+			$parts = explode('API', $url);
+
+			$hash = implode('', array($api_key, array_pop($parts), round($time / 24 / 3600)));
+			$md5 = md5($hash);
+
+			$headers[] = "Api-Password: $md5";
+		}
 
 		$opts = array(
 			'http' => array(
-				'method' => 'GET',
-				// 'proxy'  => 'tcp://91.212.124.153:80',
-				'header' => implode(
-					PHP_EOL, array(
-						'Accept: text/*',
-						'User-Agent: Mozilla/5.0 Gecko/20100101 Firefox/18.0'
-					)
-				)
+				'method'  => 'GET',
+				'timeout' => 5,
+				'header'  => implode(PHP_EOL, $headers)
 			)
 		);
-		$context = stream_context_create($opts);
 
 		$loops = $this->loops;
 
 		do {
-			$page = @file_get_contents($this->getProxy($url), 0, $context);
+			$opts['http']['proxy'] = 'tcp://' . $this->getProxy();
+
+			$context = stream_context_create($opts);
+			$page = trim(file_get_contents($url, 0, $context));
 
 			if ($page) {
 				return $page;

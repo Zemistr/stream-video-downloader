@@ -7,19 +7,20 @@ $downloader = new \StreamCzDownloader\Downloader();
 $downloader->detectDriver();
 
 $logger = new StreamCzDownloader\Loggers\MemoryLogger();
-$loader = new StreamCzDownloader\Loaders\ProxyLoader($logger);
+$loader = new StreamCzDownloader\Loaders\DirectLoader($logger);
 
 $downloader->setLogger($logger);
 $downloader->setLoader($loader);
 
-if(isset($_GET['update'])) {
+if (isset($_GET['update'])) {
 	file_put_contents('status_checker_test_data.json', json_encode($downloader->load($url)));
 	exit('ok');
 }
 
 try {
 	$live = json_encode($downloader->load($url));
-}catch (RuntimeException $exception){
+}
+catch (RuntimeException $exception) {
 	$live = null;
 }
 
@@ -30,7 +31,7 @@ $message = array(
 	'messages' => array()
 );
 
-if($live != $temp) {
+if ($live != $temp) {
 	$message['status'] = 0;
 	$message['messages'][] = 'Data are not identical.';
 	$message['messages'][] = $url . '  X  http://stream.zemistr.eu/status_checker_test_data.json';
