@@ -44,8 +44,12 @@ class DirectLoader implements ILoader {
 			)
 		);
 
+		$this->logger->log(__METHOD__ . ' - header: ' . implode(PHP_EOL, $headers));
+
 		$context = stream_context_create($opts);
 		$page = trim(file_get_contents($url, 0, $context));
+
+		$this->logger->log(__METHOD__ . ' - $page: ' . $page);
 
 		if ($page) {
 			return $page;
