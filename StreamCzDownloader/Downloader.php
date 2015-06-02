@@ -25,14 +25,14 @@ class Downloader {
 	private $logger;
 
 	public function __construct() {
-		spl_autoload_register(array($this, 'autoload'));
+		spl_autoload_register([$this, 'autoload']);
 	}
 
 	protected function setHeaders($result = true) {
-		header("Content-Type: application/json; charset=UTF-8");
+		header('Content-Type: application/json; charset=UTF-8');
 
 		if (!$result) {
-			header("HTTP/1.0 404 Not Found");
+			header('HTTP/1.0 404 Not Found');
 		}
 	}
 
@@ -76,10 +76,10 @@ class Downloader {
 			throw new \RuntimeException('You must set Driver!');
 		}
 
-		return $this->driver->getData($url) + array(
+		return $this->driver->getData($url) + [
 			'title'     => null,
-			'qualities' => array()
-		);
+			'qualities' => []
+		];
 	}
 
 	public function send($url) {

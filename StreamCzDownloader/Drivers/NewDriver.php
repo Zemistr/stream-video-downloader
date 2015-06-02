@@ -19,10 +19,10 @@ class NewDriver implements IDriver {
 	public function getData($url) {
 		$this->logger->log(__METHOD__ . ': ' . $url);
 
-		$result = array(
+		$result = [
 			'title'     => null,
-			'qualities' => array()
-		);
+			'qualities' => []
+		];
 
 		$original_url = $url;
 
@@ -36,7 +36,7 @@ class NewDriver implements IDriver {
 			$data = @json_decode($json, true);
 
 			/********************** TITLE **********************/
-			$title_parts = array();
+			$title_parts = [];
 
 			if (!empty($data['_embedded']['stream:show']['name'])) {
 				$title_parts[] = $data['_embedded']['stream:show']['name'];
@@ -55,11 +55,11 @@ class NewDriver implements IDriver {
 					if (!empty($quality['quality_label'])) {
 						$quality_format =& $quality['formats'][0];
 
-						$result['qualities'][$quality['quality_label']] = array(
+						$result['qualities'][$quality['quality_label']] = [
 							'source'        => $quality_format['source'],
 							'quality'       => $quality_format['quality'],
 							'quality_label' => $quality['quality_label']
-						);
+						];
 					}
 				}
 			}

@@ -6,32 +6,39 @@ use StreamCzDownloader\Loggers\ILogger;
 class ProxyLoader implements ILoader {
 	/** @var ILogger */
 	private $logger;
-	private $temp_file;
 	private $loops = 10;
-
 	/** @var \InfiniteIterator */
 	private $proxies;
+	private $temp_file;
 
 	public function __construct(ILogger $logger) {
 		$this->logger = $logger;
 	}
 
-	public function setTempDir($temp_dir) {
-		$this->temp_file = "$temp_dir/proxies.php";
+	protected function getProxy() {
+		if (!$this->proxies) {
+			$iterator = new \ArrayIterator($this->loadProxies());
+			$this->proxies = new \InfiniteIterator($iterator);
+		}
+
+		$this->proxies->rewind();
+		$current = $this->proxies->current();
+
+		return $current;
 	}
 
 	protected function loadProxies() {
 		if (!is_file($this->temp_file)) {
-			$headers = array(
+			$headers = [
 				'User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0',
 				"Host: free-proxy.cz",
-			);
+			];
 
-			$opts = array(
-				'http' => array(
+			$opts = [
+				'http' => [
 					'header' => implode(PHP_EOL, $headers)
-				)
-			);
+				]
+			];
 
 			$context = stream_context_create($opts);
 			$page = file_get_contents('http://free-proxy.cz/cs/proxylist/country/all/https/ping/level3/1', 0, $context);
@@ -50,12 +57,12 @@ class ProxyLoader implements ILoader {
 			);
 
 			$iterator = new \ArrayIterator($xpath_array);
-			$pairs = array();
+			$pairs = [];
 
 			foreach ($iterator as $item) {
 				if (is_numeric(str_replace('.', '', $item))) {
 					$iterator->next();
-					$pair = implode(':', array($item, $iterator->current()));
+					$pair = implode(':', [$item, $iterator->current()]);
 					$pairs[$pair] = $pair;
 				}
 			}
@@ -64,18 +71,6 @@ class ProxyLoader implements ILoader {
 		}
 
 		return require($this->temp_file);
-	}
-
-	protected function getProxy() {
-		if (!$this->proxies) {
-			$iterator = new \ArrayIterator($this->loadProxies());
-			$this->proxies = new \InfiniteIterator($iterator);
-		}
-
-		$this->proxies->rewind();
-		$current = $this->proxies->current();
-
-		return $current;
 	}
 
 	protected function unparseUrl(array $parsed_url) {
@@ -95,7 +90,7 @@ class ProxyLoader implements ILoader {
 	public function load($url, $original_url) {
 		$this->logger->log(__METHOD__ . ': ' . $url);
 
-		$headers = array(
+		$headers = [
 			'User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:36.0) Gecko/20100101 Firefox/36.0',
 			'Accept: application/json, text/plain, */*',
 			"Accept-Language: cs,en;q=0.5",
@@ -103,28 +98,28 @@ class ProxyLoader implements ILoader {
 			"Host: www.stream.cz",
 			"x-insight: activate",
 			"Referer: $original_url"
-		);
+		];
 
 		if (strpos($url, 'API')) {
-			$data = array("95de526253c14", "fb5f58a", "820353bd70", "fd");
+			$data = ["95de526253c14", "fb5f58a", "820353bd70", "fd"];
 			$time = microtime(true);
 
-			$api_key = implode('', array($data[1], $data[2], $data[0], $data[3]));
+			$api_key = implode('', [$data[1], $data[2], $data[0], $data[3]]);
 			$parts = explode('API', $url);
 
-			$hash = implode('', array($api_key, array_pop($parts), round($time / 24 / 3600)));
+			$hash = implode('', [$api_key, array_pop($parts), round($time / 24 / 3600)]);
 			$md5 = md5($hash);
 
 			$headers[] = "Api-Password: $md5";
 		}
 
-		$opts = array(
-			'http' => array(
+		$opts = [
+			'http' => [
 				'method'  => 'GET',
 				'timeout' => 5,
 				'header'  => implode(PHP_EOL, $headers)
-			)
-		);
+			]
+		];
 
 		$loops = $this->loops;
 
@@ -139,8 +134,13 @@ class ProxyLoader implements ILoader {
 			}
 
 			$loops -= 1;
-		} while ($loops);
+		}
+		while ($loops);
 
 		return false;
+	}
+
+	public function setTempDir($temp_dir) {
+		$this->temp_file = "$temp_dir/proxies.php";
 	}
 }

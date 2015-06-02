@@ -2,7 +2,7 @@
 namespace StreamCzDownloader\Loggers;
 
 class MemoryLogger implements ILogger {
-	private $log = array();
+	private $log = [];
 
 	public function getLog() {
 		return $this->log;
