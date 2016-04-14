@@ -30,21 +30,23 @@
 	<script src="ajax.class.min.js?v2"></script>
 	<script src="downloader.min.js?v2"></script>
 
-	<!-- Piwik -->
-	<script type="text/javascript">
-		var pkBaseURL = (("https:" == document.location.protocol) ? "https://s01.zemistr.eu/piwik/" : "http://s01.zemistr.eu/piwik/");
-		document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
-	</script>
-	<script type="text/javascript">
-		try {
-			var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 3);
-			piwikTracker.trackPageView();
-			piwikTracker.enableLinkTracking();
-		} catch(err){
-		}
-	</script>
-	<noscript><p><img src="http://s01.zemistr.eu/piwik/piwik.php?idsite=3" style="border:0" alt=""/></p></noscript>
-	<!-- End Piwik Tracking Code -->
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(["setDomains", ["*.stream.zemistr.eu"]]);
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//piwik.zdft.net/";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', 6]);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="//piwik.zdft.net/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
+  <!-- End Piwik Code -->
+
 </head>
 <body>
 <div id="downloader">
@@ -67,7 +69,7 @@
 	<footer id="main-footer" class="main">
 		Idea &amp; parser by <a href="http://zemistr.eu" target="_blank" class="footer-link">Zemistr</a>,
 		HTML/CSS &amp; effects by <a href="http://marekzeman.cz" target="_blank" class="footer-link">Marek Zeman</a>
-		<i class="version">Version 3.2.1 / <?= date('Y') ?></i>
+		<i class="version">Version 3.2.2 / <?= date('Y') ?></i>
 	</footer>
 </div>
 </body>

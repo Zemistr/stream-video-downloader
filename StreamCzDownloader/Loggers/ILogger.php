@@ -2,5 +2,5 @@
 namespace StreamCzDownloader\Loggers;
 
 interface ILogger {
-	public function log($message);
+  public function log($message);
 }

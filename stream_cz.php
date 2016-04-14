@@ -2,17 +2,15 @@
 /**
  * Stream.cz downloader
  *
- * @version 3.0.0
+ * @version 3.2.2
  * @author  Martin Zeman (Zemistr)
  */
 
 $url =& $_POST['url'];
 
 if ($url === null) {
-	$url =& $_GET['test_url'];
+  $url =& $_GET['test_url'];
 }
-
-@file_get_contents('http://data.zemistr.eu/counter:stream/num-1-' . time() . '.png');
 
 require('StreamCzDownloader/Downloader.php');
 
@@ -26,4 +24,4 @@ $downloader->setLogger($logger);
 $downloader->setLoader($loader);
 $data = $downloader->send($url);
 
-@file_get_contents('http://s01.zemistr.eu/piwik/piwik.php?idsite=3&rec=1&url=' . $url . '&action_name=' . rawurlencode($data['title']) . '&cip=' . @$_SERVER['REMOTE_ADDR'] . '&_cvar={"1":["from","web"]}&token_auth=189b9ac0cf4f973d483038481cd0042b');
+@file_get_contents('http://piwik.zdft.net/piwik/piwik.php?idsite=7&rec=1&url=' . $url . '&action_name=' . rawurlencode($data['title']) . '&cip=' . @$_SERVER['REMOTE_ADDR'] . '&token_auth=13a8deb4bf6f0bbec63240301c0142c0');

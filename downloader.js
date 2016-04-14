@@ -69,8 +69,7 @@ window.onload = function() {
                 $result_name.value = data.title;
                 for(key in data.qualities) {
                     quality = data.qualities[key];
-
-                    result_btns += '<a href="' + quality.source + '" class="result-link btn" target="_blank">' + quality.quality_label + ' (' + quality.quality + ')</a>';
+                    result_btns += '<a href="' + quality.source + '" class="result-link btn" target="_blank">' + quality.quality + '</a>';
                 }
             }
 
