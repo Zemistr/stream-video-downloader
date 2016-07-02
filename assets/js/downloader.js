@@ -45,7 +45,7 @@ window.onload = function() {
 
             setTimeout(function() {
                 Ajax.post(
-                    'stream_cz.php',
+                    'ajax.php',
                     {url: $url_input.value},
                     function(data) {
                         Downloader.displayResult(Ajax.parseJSON(data));
