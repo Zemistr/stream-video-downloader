@@ -37,7 +37,10 @@
                 <h1 id="main-title">Video Downloader</h1>
             </header>
             <section id="main-search" class="main">
-                Na žádost stream.cz byl downloader zrušen.
+                <input type="text" id="url-input" class="input" placeholder="Zadejte adresu videa">
+                <a class="btn" id="url-submit" href="#search">Vyhledat</a>
+
+                <div id="url-example">http://www.stream.cz/nejnovejsi/peklonataliri/10000721-ryze</div>
             </section>
             <section id="main-results_mask" class="">
                 <div id="main-results" class="main">
