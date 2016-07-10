@@ -89,6 +89,12 @@ window.onload = function() {
         $url_submit.focus();
     };
 
+    $url_input.onkeyup = function(e) {
+      if (e.keyCode == 13) {
+        Downloader.getResult();
+      }
+    };
+
     Downloader.hideLoader();
     if(lte_IE8) {
         alert('Prosím, aktualizujte svůj prohlížeč.');
